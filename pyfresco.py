@@ -1,6 +1,6 @@
 import os
 import subprocess
-import textwrap
+import re
 import json
 from pathlib import Path
 import ADWA_potentials as adwa_pot
@@ -44,6 +44,11 @@ def load_reaction_config(config_path):
     return config
     
 def getInput():
+    """
+    This scrapes the input_generator.inp file for the energies, jpi, and transfer configuration
+    and returns them in a list. More than one state can be calculated at once, so however many
+    states are given in input_generator.inp will be calculated, and fresco will be ran for each of them.
+    """
     inputFileName = 'input_generator.inp'
     inputFile = open(inputFileName, 'r')
     energies = []
@@ -67,8 +72,17 @@ def getInput():
     return energies, ns, ls, js_transfer, js_finalstate
 
 def runFresco(inFile, outfile, dir, string_suffix, transfer_info, evenMassFinal, config):
+    """
+    This function runs the FRESCO executable with the given input file and handles the output.
+    It renames the output file to avoid overwriting in the next iteration, if there are multiple states in the input file.
+    Make sure to adjust the path to the FRESCO executable in the reaction_config file.
+
+    The fort.16 file is where the inelastic channel cross-section is stored. 
+    A fresco .fri (input) and .fro (output) file, and {nucleus}_{energy}_{n}{l}{jpi}.txt (cross-section output) file is created for each state.
+    The inelastic channel is the second partition, the elastic is always calculated and is the first set of cross-section data.
+    """
     # Run the FRESCO executable with the input file
-    executable_path = './bin/fresco'
+    executable_path = config['executable_path']
     command_string = f'{executable_path} < {inFile} > {outfile}'
     command = [command_string] 
     try:
@@ -97,34 +111,37 @@ def runFresco(inFile, outfile, dir, string_suffix, transfer_info, evenMassFinal,
 
 def createInputFile(energies, ns, ls, js_transfer, js_finalstate, deuteron_pot, proton_pot, config):
     """
-    Below is an example of a default fresco input file, where the main things that changes
-    from one input file to another are the energy, the l transfer, the jpi, and the parity.
+    This handles the creation of the input file for FRESCO.
+    The input file is created based on the parameters in the reaction_config.json file, and uses the ADWA_potentials.py file to
+    calculate the deuteron and proton potentials.
 
-    Therefore, this changes the corresponding lines in the input file, and generates a unique input file 
-    for each of the different configurations.
+    This should be ran from the same directory that your local version of FRESCO is in.
 
-    DO NOT ADJUST SPACING, just optical model values need to be change from reaction to reaction -- otherwise spacing is very sensitive 
+    DO NOT ADJUST SPACING, the f-string below looks crazy with all parameters filled but the formatting is very particular 
     """
 
-    # Loop through each line in the input file, create file and then run FRESCO to get output
+    # Gather all necessary information to create the input file
     Z_fmt = f"{config['Z']:4.1f}"
     mass_in = f"{config['mass_in']:7.4f}"
     mass_out = f"{config['mass_out']:7.4f}"
     gs_spin_fmt = f"{config['gs_spin']:4.1f}"     # Ensures correct spacing and decimal format
     gs_parity_fmt = f"{config['gs_parity']:>2}"
-    label_out_reversed = config['label_out'][-2:].lower() + config['label_out'][:-2]
-
-    # lines = fri.strip().split('\n')
-    # target_line = lines[7]  # Get the line with the ground state spin + parity
-    # tokens = target_line.split()
-    # ground_state_parity = tokens[-2] # Get the parity value, used for assigning parity to the final state given an angular momentum transfer
+    th_min = f"{config['angle_min']:4.1f}"
+    th_max = f"{config['angle_max']:4.1f}"
+    th_step = f"{config['angle_step']:3.1f}"
+    at = float(config['AT'])
+    residual_mass = float(config['residual_mass'])
+    match = re.match(r"(\d+)([A-Za-z]+)", config['label_out'])
+    mass, element = match.groups()
+    label_out_reversed = element.lower() + mass
     evenMassFinal = True if int(config['label_out'][0:2]) % 2 == 0 else False
     
+    # This is the loop that creates the input file for each state, which is based on the number of
+    # states in the input_generator.inp file.
     for i in range(len(energies)):
-        
-        q = f"{config['Q_value']:6.4f}"
-        e =  f"{energies[i]:5.3f}"
-        be = f"{(config['binding_energy'] - float(e)):6.4f}"
+        q = f"{config['Q_value']:6.4f}" # Q value
+        e =  f"{energies[i]:5.3f}" # Energy of the state
+        be = f"{(config['binding_energy'] - float(e)):6.4f}" # Binding energy
         energy = float(e) * 1000
         l = l_dict[ls[i]]
         if l % 2 == 0:
@@ -137,25 +154,25 @@ def createInputFile(energies, ns, ls, js_transfer, js_finalstate, deuteron_pot, 
             'l': ls[i],
             'js_transfer': frac_dict[js_transfer[i]],
             'js_final': js_finalstate[i],
-            'parity': final_parity[0],  # e.g., '+' or '-'
+            'parity': final_parity[0],  
         }
 
         fri=f'''{config['reaction']}, {js_finalstate[i]}{final_parity[0]} {e} MeV {ns[i]}{ls[i]}{js_transfer[i]}
 0.10    55.0    0.20    0.20    30.0    -6.0
  00. 20.  +.00   F F
-0  15.0     65.   0.1  1
+0  {th_min}     {th_max}  {th_step}  1
 0.0    0 1   1 1  48          .000    0.   0.001
  1 1 0 0 2 3 0 0-3 1 0 0 1
-2H      2.0141  1.0        1  {config['label_in']}    {mass_in} {float(config['Z'])}    0.0000
+2H      2.0141  1.0        1  {config['label_in']}    {mass_in} {Z_fmt}    0.0000
 1.0   +1 0.0               1 {gs_spin_fmt}   {gs_parity_fmt} 0.000
-1H      1.0078  1.0        1  {config['label_out']}    {mass_out} {float(config['Z'])}    {q}
+1H      1.0078  1.0        1  {config['label_out']}    {mass_out} {Z_fmt}    {q}
 0.5   +1 0.0               2  {js_finalstate[i]}   {final_parity} {e}
 
-  1 0  0    50.0     0.0   1.269
+  1 0  0    {at}     0.0   {deuteron_pot['rc0']:5.3f}
   1 1  0   {deuteron_pot['V']:5.2f}   {deuteron_pot['r0']:5.3f}   {deuteron_pot['a']:5.3f}   {deuteron_pot['Vi']:5.3f}   {deuteron_pot['ri0']:5.3f}   {deuteron_pot['ai']:5.3f}
   1 2  0                           {deuteron_pot['Vsi']:5.2f}   {deuteron_pot['rsi0']:5.3f}   {deuteron_pot['asi']:5.3f}
   1 3  0   {deuteron_pot['Vso']:5.2f}   {deuteron_pot['rso0']:5.3f}   {deuteron_pot['aso']:5.3f}   {deuteron_pot['Vsoi']:5.2f}   {deuteron_pot['rsoi0']:5.3f}   {deuteron_pot['asoi']:5.3f}
-  2 0  0    51.0     0.0   1.267
+  2 0  0    {residual_mass}     0.0   {proton_pot['rc0']:5.3f}
   2 1  0   {proton_pot['V']:5.2f}   {proton_pot['r0']:5.3f}   {proton_pot['a']:5.3f}   {proton_pot['Vi']:5.3f}   {proton_pot['ri0']:5.3f}   {proton_pot['ai']:5.3f}
   2 2  0                           {proton_pot['Vsi']:5.2f}   {proton_pot['rsi0']:5.3f}   {proton_pot['asi']:5.3f}
   2 3  0   {proton_pot['Vso']:5.2f}   {proton_pot['rso0']:5.3f}   {proton_pot['aso']:5.3f}   {proton_pot['Vsoi']:5.2f}   {proton_pot['rsoi0']:5.3f}   {proton_pot['asoi']:5.3f}
@@ -164,7 +181,7 @@ def createInputFile(energies, ns, ls, js_transfer, js_finalstate, deuteron_pot, 
   3 3  5    1.00            1.00
   3 4  5    1.00            1.00
   3 7  5    1.00            1.00
-  4 0  0    51.0     0.0    1.25
+  4 0  0    {residual_mass}     0.0    1.25
   4 1  0    50.0    1.25    0.65
   4 3  0     6.0    1.25    0.65
 0
@@ -179,7 +196,8 @@ def createInputFile(energies, ns, ls, js_transfer, js_finalstate, deuteron_pot, 
 16.0
 EOF
 '''
-
+        # Handles the output logic, depending on whether you land on even/odd nucleus depends on interpretation of the js_finalstate
+        # Whether your Jpi is integer or half-integer form
         if evenMassFinal: # landing on even nucleus
             string_suffix = f'{transfer_info["energy"]}_{transfer_info["n"]}{transfer_info["l"]}{transfer_info["js_transfer"]}_{int(transfer_info["js_final"])}{transfer_info["parity"]}'
             fileName = f'{label_out_reversed}dp_adwa_{string_suffix}.fri'
@@ -198,14 +216,11 @@ EOF
         
 def main():
     config = load_reaction_config("reaction_config.json")
-    beam_energy, zt, at = config["beam_energy"], config["Z"], config["AT"]
-    # print(beam_energy, zt, at)
-    residual_mass = float(at) + 1
+    beam_energy, zt, at, residual_mass = config["beam_energy"], config["Z"], config["AT"], config["residual_mass"]
     deuteron_pot = adwa_pot.Wales_Johnson_deutron_AWDA(beam_energy, zt, at)
     proton_pot = adwa_pot.koning_delaroche_proton_potential(beam_energy, zt, residual_mass)
     energies, ns, ls, js_transfer, js_finalstate = getInput()
     createInputFile(energies, ns, ls, js_transfer, js_finalstate, deuteron_pot, proton_pot, config)
-    
 
 if __name__ == "__main__":
     main()

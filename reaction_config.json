@@ -1,14 +1,19 @@
 {
-  "reaction": "50Ti(d,p)51Ti",
+  "reaction": "48Ti(d,p)49Ti",
   "beam_energy": 16.0,
   "Z": 22,
-  "AT": 50,
-  "mass_in": 49.9447,
-  "mass_out": 50.9466,
-  "label_in": "50Ti",
-  "label_out": "51Ti",
-  "Q_value": 4.1479,
-  "binding_energy": 6.3725,
+  "AT": 48,
+  "residual_mass": 49,
+  "mass_in": 47.9479,
+  "mass_out": 48.9479,
+  "label_in": "48Ti",
+  "label_out": "49Ti",
+  "Q_value": 5.9178,
+  "binding_energy": 11.626,
   "gs_spin": 0.0,
-  "gs_parity": "+1"
+  "gs_parity": "+1",
+  "angle_min": 15.0,
+  "angle_max": 65.0,
+  "angle_step": 0.1,
+  "executable_path": "./bin/fresco"
 }

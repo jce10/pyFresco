@@ -6,10 +6,21 @@ def round_params(params: dict[str, float], ndigits: int = 4) -> dict[str, float]
 def koning_delaroche_neutron_potential(
     E: float, zt: int, at: int
 ):
-    """Koning-Delaroche neutron scattering optical model potential"""
+    """Koning-Delaroche neutron scattering optical model potential
+    From  Koning, A.J., Delaroche, J.P., "Local and global nucleon optical models from 1 keV to 200 MeV", Nuclear Physics A, 713, 2003
+    https://doi.org/10.1016/S0375-9474(02)01321-0
+
+    Parameters
+    ----------
+    E: float
+        The projectile energy in MeV
+    zt: int
+        The target Z
+    at: int
+        The target A
+    """
     params = {}
     nt = at - zt
-    
     v1 = 59.30 - 21.0 * (nt - zt) / at - 0.024 * at
     v2 = 0.007228 - 1.48e-6 * at    
     v3 = 1.994e-5 - 2.0e-8 * at
@@ -131,6 +142,8 @@ def Wales_Johnson_deutron_AWDA(
 
     """
     Wales and Johnson deuteron scattering optical model potential
+    From G.L. Wales and R.C. Johnson, "Deuteron break-up effects in (p, d) reactions at 65 MeV", Nuclear Physics A, 274, 1976
+    https://doi.org/10.1016/0375-9474(76)90234-7    
     """
     E_deuteron = E / 2.0
     params_protons, params_neutrons = {}, {}
@@ -199,6 +212,9 @@ def Wales_Johnson_deutron_AWDA(
     params["aso"] = aBar_Vso
     params["rsoi0"] = params["rso0"]
     params["asoi"] = aBar_prime_Vso
+
+    # Lastly, need the charge radius for target mass, depends on proton optical potential w/ mass, no energy dependence
+    params["rc0"] = params_protons["rc0"]
 
     return params
     # rounded_params = round_params(params)
