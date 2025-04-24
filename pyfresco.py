@@ -5,16 +5,6 @@ import json
 from pathlib import Path
 import ADWA_potentials as adwa_pot
 
-# base_title = '50Ti(d,p)51Ti 16 MeV (ADWA)'
-# binding    = 6.3725 # neutron separation energy of final nucleus in MeV
-# Qvalue     = 4.1479 # Q-value of the reaction in MeV
-# Z          = 22
-# label_in   = '50Ti' # 4 characters
-# m_in    = 49.9447
-# label_out  = '51Ti' # 4 characters
-# m_out   = 50.9466
-# gs_spin = 0.0
-# gs_parity = '+1'
 
 # Dictionaries used for formatting and parity assignment logic
 l_dict = {'s': 0, 'p': 1, 'd': 2, 'f': 3, 'g': 4, 'h': 5, 'i': 6, 'j': 7}
@@ -122,8 +112,8 @@ def createInputFile(energies, ns, ls, js_transfer, js_finalstate, deuteron_pot, 
 
     # Gather all necessary information to create the input file
     Z_fmt = f"{config['Z']:4.1f}"
-    mass_in = f"{config['mass_in']:7.4f}"
-    mass_out = f"{config['mass_out']:7.4f}"
+    mass_in = f"{config['mass_in']:7.3f}"
+    mass_out = f"{config['mass_out']:7.3f}"
     gs_spin_fmt = f"{config['gs_spin']:4.1f}"     # Ensures correct spacing and decimal format
     gs_parity_fmt = f"{config['gs_parity']:>2}"
     th_min = f"{config['angle_min']:4.1f}"
@@ -141,8 +131,8 @@ def createInputFile(energies, ns, ls, js_transfer, js_finalstate, deuteron_pot, 
     for i in range(len(energies)):
         q = f"{config['Q_value']:6.4f}" # Q value
         e =  f"{energies[i]:5.3f}" # Energy of the state
-        be = f"{(config['binding_energy'] - float(e)):6.4f}" # Binding energy
-        energy = float(e) * 1000
+        be = f"{(config['binding_energy'] - float(e)):6.4f}" # Effective binding energy
+        energy = float(e) * 1000 # Convert MeV to keV
         l = l_dict[ls[i]]
         if l % 2 == 0:
             final_parity = config['gs_parity']
@@ -156,16 +146,16 @@ def createInputFile(energies, ns, ls, js_transfer, js_finalstate, deuteron_pot, 
             'js_final': js_finalstate[i],
             'parity': final_parity[0],  
         }
-
+        
         fri=f'''{config['reaction']}, {js_finalstate[i]}{final_parity[0]} {e} MeV {ns[i]}{ls[i]}{js_transfer[i]}
 0.10    55.0    0.20    0.20    30.0    -6.0
  00. 20.  +.00   F F
 0  {th_min}     {th_max}  {th_step}  1
 0.0    0 1   1 1  48          .000    0.   0.001
  1 1 0 0 2 3 0 0-3 1 0 0 1
-2H      2.0141  1.0        1  {config['label_in']}    {mass_in} {Z_fmt}    0.0000
+2H      2.0141  1.0        1  {config['label_in']:<8}{mass_in} {Z_fmt}    0.0000
 1.0   +1 0.0               1 {gs_spin_fmt}   {gs_parity_fmt} 0.000
-1H      1.0078  1.0        1  {config['label_out']}    {mass_out} {Z_fmt}    {q}
+1H      1.0078  1.0        1  {config['label_out']:<8}{mass_out} {Z_fmt}    {q}
 0.5   +1 0.0               2  {js_finalstate[i]}   {final_parity} {e}
 
   1 0  0    {at}     0.0   {deuteron_pot['rc0']:5.3f}
