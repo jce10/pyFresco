@@ -40,6 +40,12 @@ This of course implies you have a working version of FRESCO on your local machin
 Also prepare an input_generator.inp file with information for each state of interest:
 Excitation energy, spin (J), and transfer configuration (n, l, j).
 
+```
+# E	Jpi	n	l	j_transfer
+4.172	3	2	p	1.5
+```
+**
+Note any half-integer spins, should be input as a decimal value, not using the fraction value (i.e. 1.5 instead of 3/2)**
 ## Running the Code
 Run the core script:
 ```
