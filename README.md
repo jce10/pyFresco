@@ -35,6 +35,8 @@ Create and edit a reaction_config.json file. Example:
   "executable_path": "./bin/fresco"
 }
 ```
+This of course implies you have a working version of FRESCO on your local machine, update the executable_path to the directory where you have the fresco executable script located.
+
 Also prepare an input_generator.inp file with information for each state of interest:
 Excitation energy, spin (J), and transfer configuration (n, l, j).
 
