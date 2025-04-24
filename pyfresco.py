@@ -105,7 +105,7 @@ def createInputFile(energies, ns, ls, js_transfer, js_finalstate, deuteron_pot, 
     The input file is created based on the parameters in the reaction_config.json file, and uses the ADWA_potentials.py file to
     calculate the deuteron and proton potentials.
 
-    This should be ran from the same directory that your local version of FRESCO is in.
+    Make sure that you updated the path to the FRESCO executable file in the reaction_config.json.
 
     DO NOT ADJUST SPACING, the f-string below looks crazy with all parameters filled but the formatting is very particular 
     """
