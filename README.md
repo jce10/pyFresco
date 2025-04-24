@@ -55,12 +55,12 @@ For each state listed in the .inp file, this will:
 
 To extract and sort FRESCO output:
 ```
-python getFresco_output.py {nucleus}{excitation_energy}{transfer_config}_{JPi}.txt
+python getFresco_output.py {nucleus}_{excitation_energy}_{transfer_config}_{JPi}.txt
 ```
 
 This creates a .sorted version:
 
-{nucleus}{excitation_energy}{transfer_config}_{JPi}.sorted
+{nucleus}_{excitation_energy}_{transfer_config}_{JPi}.sorted
 
 To plot the angular distribution:
 ```
