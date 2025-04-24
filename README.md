@@ -1,4 +1,4 @@
-pyFresco
+# pyFresco
 
 pyFresco is a Python wrapper script that calculates optical model potential parameters and creates FRESCO input cards, which are then run using the FRESCO nuclear reaction code.
 Features
@@ -11,7 +11,7 @@ Features
 
     Extracts and plots angular distributions.
 
-Setup
+## Setup
 
 Create and edit a reaction_config.json file. Example:
 ```
@@ -37,34 +37,35 @@ Create and edit a reaction_config.json file. Example:
 ```
 Also prepare an input_generator.inp file with information for each state of interest:
 Excitation energy, spin (J), and transfer configuration (n, l, j).
-Running the Code
 
+## Running the Code
 Run the core script:
-
+```
 python pyfresco.py
-
+```
 For each state listed in the .inp file, this will:
 
-    Create .fri (input) and .fro (output) files
+    Create .fri (input) and .fro (output) files from running FRESCO
 
-    Output angular distribution files named like:
+    Output angular distribution files with the naming convention:
 
 {nucleus}{excitation_energy}{transfer_config}_{JPi}.txt
 
-Post-Processing & Plotting
+## Post-Processing & Plotting
 
 To extract and sort FRESCO output:
-
+```
 python getFresco_output.py {nucleus}{excitation_energy}{transfer_config}_{JPi}.txt
+```
 
 This creates a .sorted version:
 
 {nucleus}{excitation_energy}{transfer_config}_{JPi}.sorted
 
 To plot the angular distribution:
-
+```
 python plot_fresco.py {nucleus}{excitation_energy}{transfer_config}_{JPi}.sorted
+```
 
-Example
-
+### Example
 An example case for the reaction 49Ti(d,p)50Ti populating a 3⁺ state at 4.172 MeV is included in the default configuration files.
