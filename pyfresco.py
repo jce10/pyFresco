@@ -4,6 +4,7 @@ import re
 import json
 from pathlib import Path
 import ADWA_potentials as adwa_pot
+import sys
 
 
 # Dictionaries used for formatting and parity assignment logic
@@ -11,6 +12,46 @@ l_dict = {'s': 0, 'p': 1, 'd': 2, 'f': 3, 'g': 4, 'h': 5, 'i': 6, 'j': 7}
 frac_dict = {'0.5': 12, '1.5': 32, '2.5': 52, '3.5': 72, '4.5': 92, '5.5': 112, '6.5': 132, '7.5': 152} 
 
     
+def print_optical_potentials(deuteron_pot, proton_pot, config):
+    """
+    Pretty-printer for ADWA optical model parameters.
+    """
+
+    def _print_block(label, particle, pot):
+        print("=" * 60)
+        print(f"{label} + {particle} Optical Model Parameters")
+        print("=" * 60)
+
+        fmt = "{:<8s} = {:>8.3f}"
+        fmtV = "{:<8s} = {:>8.3f}"
+
+        # Central real + imaginary
+        print(fmtV.format("V",   pot["V"]))
+        print(fmt.format("r0",  pot["r0"]))
+        print(fmt.format("a",   pot["a"]))
+        print(fmtV.format("Vi",  pot["Vi"]))
+        print(fmt.format("ri0", pot["ri0"]))
+        print(fmt.format("ai",  pot["ai"]))
+
+        # Surface imaginary
+        print(fmtV.format("Vsi",  pot["Vsi"]))
+        print(fmt.format("rsi0", pot["rsi0"]))
+        print(fmt.format("asi",  pot["asi"]))
+
+        # Spin–orbit
+        print(fmtV.format("Vso",  pot["Vso"]))
+        print(fmt.format("rso0", pot["rso0"]))
+        print(fmt.format("aso",  pot["aso"]))
+        print(fmtV.format("Vsoi",  pot["Vsoi"]))
+        print(fmt.format("rsoi0", pot["rsoi0"]))
+        print(fmt.format("asoi",  pot["asoi"]))
+
+        # Coulomb radius
+        print(fmt.format("rc0", pot["rc0"]))
+        print()
+
+    _print_block(config["label_in"],  "d", deuteron_pot)
+    _print_block(config["label_out"], "p", proton_pot)
 
 
 def load_reaction_config(config_path):
@@ -209,6 +250,13 @@ def main():
     beam_energy, zt, at, residual_mass = config["beam_energy"], config["Z"], config["AT"], config["residual_mass"]
     deuteron_pot = adwa_pot.Wales_Johnson_deutron_AWDA(beam_energy, zt, at)
     proton_pot = adwa_pot.koning_delaroche_proton_potential(beam_energy, zt, residual_mass)
+
+    # Utility print function if you pass optional arg. 'print_params'
+     # Optional print-only mode
+    if len(sys.argv) > 1 and sys.argv[1] == "print_params":
+        print_optical_potentials(deuteron_pot, proton_pot, config)
+        return
+
     energies, ns, ls, js_transfer, js_finalstate = getInput()
     createInputFile(energies, ns, ls, js_transfer, js_finalstate, deuteron_pot, proton_pot, config)
 
