@@ -1,3 +1,4 @@
+import csv
 import os
 import subprocess
 import re
@@ -7,10 +8,68 @@ import ADWA_potentials as adwa_pot
 import sys
 
 
+
+
 # Dictionaries used for formatting and parity assignment logic
 l_dict = {'s': 0, 'p': 1, 'd': 2, 'f': 3, 'g': 4, 'h': 5, 'i': 6, 'j': 7}
 frac_dict = {'0.5': 12, '1.5': 32, '2.5': 52, '3.5': 72, '4.5': 92, '5.5': 112, '6.5': 132, '7.5': 152} 
 
+def write_sorted_from_fresco_output(infile: str, out_dir: str, out_basename: str) -> str:
+    """
+    Extract angular distribution block from a FRESCO text output (e.g. fort.16 renamed)
+    and write a two-column .sorted file (angle, xsec) to out_dir.
+
+    Returns the path to the written .sorted file.
+    """
+    angles = []
+    cross_sections = []
+
+    start_line = "@s1"
+    end_line = "END"
+    end_count = 0
+    lines_after_start = 0
+    between_lines = False
+
+    with open(infile, "r") as f:
+        for raw in f:
+            line = raw.strip()
+
+            if start_line in line:
+                between_lines = True
+                lines_after_start = 2
+                continue
+
+            if line == end_line:
+                if end_count == 0:
+                    end_count += 1
+                    continue
+                else:
+                    between_lines = False
+                    break
+
+            if not between_lines:
+                continue
+
+            if lines_after_start > 0:
+                lines_after_start -= 1
+                continue
+
+            # Expect 2 columns: angle xsec
+            parts = line.split()
+            if len(parts) < 2:
+                continue
+            ang, xsec = parts[0], parts[1]
+            angles.append(ang)
+            cross_sections.append(xsec)
+
+    os.makedirs(out_dir, exist_ok=True)
+    storefile = os.path.join(out_dir, f"{out_basename}.sorted")
+    with open(storefile, "w", newline="") as f:
+        writer = csv.writer(f, delimiter="\t")
+        writer.writerows(zip(angles, cross_sections))
+
+    print(f"Successfully written file {storefile}")
+    return storefile
     
 def print_optical_potentials(deuteron_pot, proton_pot, config):
     """
@@ -128,6 +187,21 @@ def runFresco(inFile, outfile, dir, string_suffix, transfer_info, evenMassFinal,
     try:
         os.rename(x_sec_outfile, renamed_outfile)
         print(f"File '{x_sec_outfile}' has been renamed to '{renamed_outfile}'.")
+        fresco_out_dir = config.get("fresco_output_dir")  
+        if fresco_out_dir is None:
+            print("WARNING: config['fresco_output_dir'] not set, skipping .sorted creation.")
+        else:
+            # Use same naming root as your pipeline expects
+            # Example: 48Ti_7155_1f52_4+.sorted
+            sorted_basename = f"{config['label_out']}_{string_suffix}"
+            try:
+                write_sorted_from_fresco_output(renamed_outfile, fresco_out_dir, sorted_basename)
+            except Exception as e:
+                print(f"WARNING: failed to write .sorted for {renamed_outfile}: {e}")
+
+
+
+
     except FileNotFoundError:
         print(f"Error: File '{x_sec_outfile}' not found.")
     except FileExistsError:
