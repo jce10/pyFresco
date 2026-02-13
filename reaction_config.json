@@ -16,4 +16,5 @@
   "angle_max": 65.0,
   "angle_step": 0.1,
   "executable_path": "./bin/fresco"
+  "fresco_output_dir": "../chi_squared_fitting/fresco_output_files/"
 }
