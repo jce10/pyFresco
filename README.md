@@ -3,6 +3,8 @@
 pyFresco is a Python wrapper script that calculates optical model potential parameters and creates FRESCO input cards, which are then run using the FRESCO nuclear reaction code.
 Features
 
+    Determines allowed quantum angular momentum transfer, $l$ values.
+
     Calculates proton & neutron optical potentials using the Koning-Delaroche global optical model.
 
     Computes deuteron optical potentials using the Adiabatic Distorted Wave Approximation (ADWA).
@@ -46,6 +48,7 @@ Excitation energy, spin (J), and transfer configuration (n, l, j).
 ```
 **
 Note any half-integer spins, should be input as a decimal value, not using the fraction value (i.e. 1.5 instead of 3/2)**
+
 ## Running the Code
 Run the core script:
 ```
@@ -77,3 +80,6 @@ python plot_fresco.py {nucleus}{excitation_energy}{transfer_config}_{JPi}.sorted
 
 ### Example
 An example case for the reaction 49Ti(d,p)50Ti populating a 3⁺ state at 4.172 MeV is included in the default configuration files.
+
+
+install optional dependencies: pip install -e .[gui]/[.dev]

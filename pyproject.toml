@@ -1,0 +1,39 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "pyFresco"
+version = "0.1.0"
+description = "Wrapper and utilities for generating and running FRESCO reaction calculations."
+authors = [
+    { name = "J.C. Esparza", email = "chrisesparza1028@gmail.com" }
+    { name = "B. Kelly", email = "bkelly4@fsu.edu" }
+]
+readme = "README.md"
+requires-python = ">=3.9"
+
+dependencies = [
+    "numpy",
+]
+
+[project.optional-dependencies]
+gui = [
+    "PyQt6",
+    "matplotlib",
+]
+
+[project.optional-dependencies]
+dev = [
+    "ipython",
+    "black",
+]
+
+[project.scripts]
+run-pyfresco = "pyfresco.pyfresco:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools]
+package-dir = {"" = "src"}

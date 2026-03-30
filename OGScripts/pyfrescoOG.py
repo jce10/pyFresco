@@ -4,23 +4,27 @@ import subprocess
 import re
 import json
 from pathlib import Path
-import ADWA_potentials as adwa_pot
+from pyfresco import omps as adwa_pot
 import sys
+from pyfresco.config import REACTION_CONFIG_FILE, INPUT_GENERATOR_FILE
 
 
 
 
 # Dictionaries used for formatting and parity assignment logic
 l_dict = {'s': 0, 'p': 1, 'd': 2, 'f': 3, 'g': 4, 'h': 5, 'i': 6, 'j': 7}
-frac_dict = {'0.5': 12, '1.5': 32, '2.5': 52, '3.5': 72, '4.5': 92, '5.5': 112, '6.5': 132, '7.5': 152} 
+frac_dict = {'0.5': 12, '1.5': 32, '2.5': 52, '3.5': 72, '4.5': 92, '5.5': 112, '6.5': 132, '7.5': 152}
 
 def write_sorted_from_fresco_output(infile: str, out_dir: str, out_basename: str) -> str:
     """
+
     Extract angular distribution block from a FRESCO text output (e.g. fort.16 renamed)
     and write a two-column .sorted file (angle, xsec) to out_dir.
 
     Returns the path to the written .sorted file.
+    
     """
+
     angles = []
     cross_sections = []
 
@@ -111,7 +115,6 @@ def print_optical_potentials(deuteron_pot, proton_pot, config):
 
     _print_block(config["label_in"],  "d", deuteron_pot)
     _print_block(config["label_out"], "p", proton_pot)
-
 
 def load_reaction_config(config_path):
     """
@@ -320,9 +323,9 @@ EOF
 
         
 def main():
-    config = load_reaction_config("reaction_config.json")
+    config = load_reaction_config("~/config/reaction_config.json")
     beam_energy, zt, at, residual_mass = config["beam_energy"], config["Z"], config["AT"], config["residual_mass"]
-    deuteron_pot = adwa_pot.Wales_Johnson_deutron_AWDA(beam_energy, zt, at)
+    deuteron_pot = adwa_pot.Wales_Johnson_deuteron_AWDA(beam_energy, zt, at)
     proton_pot = adwa_pot.koning_delaroche_proton_potential(beam_energy, zt, residual_mass)
 
     # Utility print function if you pass optional arg. 'print_params'

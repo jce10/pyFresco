@@ -3,10 +3,9 @@ import math
 def round_params(params: dict[str, float], ndigits: int = 4) -> dict[str, float]:
     return {k: round(v, ndigits) if isinstance(v, float) else v for k, v in params.items()}
 
-def koning_delaroche_neutron_potential(
-    E: float, zt: int, at: int
-):
-    """Koning-Delaroche neutron scattering optical model potential
+def koning_delaroche_neutron_potential(E: float, zt: int, at: int):
+    """
+    Koning-Delaroche neutron scattering optical model potential.
     From  Koning, A.J., Delaroche, J.P., "Local and global nucleon optical models from 1 keV to 200 MeV", Nuclear Physics A, 713, 2003
     https://doi.org/10.1016/S0375-9474(02)01321-0
 
@@ -18,7 +17,9 @@ def koning_delaroche_neutron_potential(
         The target Z
     at: int
         The target A
+
     """
+
     params = {}
     nt = at - zt
     v1 = 59.30 - 21.0 * (nt - zt) / at - 0.024 * at
@@ -66,10 +67,10 @@ def koning_delaroche_neutron_potential(
     # rounded_params = round_params(params)
     # return rounded_params
 
-def koning_delaroche_proton_potential(
-    E: float, zt: int, at: int
-):
-    """Koning-Delaroche proton scattering optical model potential
+def koning_delaroche_proton_potential(E: float, zt: int, at: int):
+    """
+
+    Koning-Delaroche proton scattering optical model potential
 
     From  Koning, A.J., Delaroche, J.P., "Local and global nucleon optical models from 1 keV to 200 MeV", Nuclear Physics A, 713, 2003
     https://doi.org/10.1016/S0375-9474(02)01321-0
@@ -82,7 +83,9 @@ def koning_delaroche_proton_potential(
         The target Z
     at: int
         The target A
+
     """
+
     params = {}
     nt = at - zt
 
@@ -136,15 +139,16 @@ def koning_delaroche_proton_potential(
     # rounded_params = round_params(params)
     # return rounded_params
 
-def Wales_Johnson_deutron_AWDA(
-    E: float, zt: int, at: int
-):
+def Wales_Johnson_deuteron_AWDA(E: float, zt: int, at: int):
 
     """
+
     Wales and Johnson deuteron scattering optical model potential
     From G.L. Wales and R.C. Johnson, "Deuteron break-up effects in (p, d) reactions at 65 MeV", Nuclear Physics A, 274, 1976
-    https://doi.org/10.1016/0375-9474(76)90234-7    
+    https://doi.org/10.1016/0375-9474(76)90234-7
+
     """
+
     E_deuteron = E / 2.0
     params_protons, params_neutrons = {}, {}
     params_protons = koning_delaroche_proton_potential(E_deuteron, zt, at)
@@ -221,17 +225,19 @@ def Wales_Johnson_deutron_AWDA(
     # return rounded_params
 
 
-
 def main():
     # Example usage
         E = 16.0
-        zt = 22
-        at = 50
-        params = {}
+        zt = 6
+        at = 12
+        # params = {}
         
-        # a1 = koning_delaroche_proton_potential(E, zt, at, params)
-        # a2 = koning_delaroche_neutron_potential(E, zt, at, params)
-        a3 = Wales_Johnson_deutron_AWDA(E, zt, at)
+        a1 = koning_delaroche_proton_potential(E, zt, at)
+        a2 = koning_delaroche_neutron_potential(E, zt, at)
+        a3 = Wales_Johnson_deuteron_AWDA(E, zt, at)
+        
+        print(a1)
+        print(a2)
         print(a3)
 if __name__ == "__main__":
     main()

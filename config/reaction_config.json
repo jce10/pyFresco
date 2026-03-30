@@ -1,0 +1,21 @@
+{
+  "reaction": "12C(d,p)13C",
+  "approx": "dwba",
+  "beam_energy": 16.0,
+  "Z": 6,
+  "AT": 12,
+  "residual_mass": 13,
+  "mass_in": 12.0000,
+  "mass_out": 13.0034,
+  "label_in": "12C",
+  "label_out": "13C",
+  "Q_value": 2.7217,
+  "binding_energy": 4.9463,
+  "gs_spin": 0.0,
+  "gs_parity": "+1",
+  "angle_min": 0.0,
+  "angle_max": 55.0,
+  "angle_step": 0.1,
+  "executable_path": "fresco",
+  "output_root_dir": "/home/jce18b/Esparza_SPS/2025_06_13C_campaign/dp/12Cdp_fresco"
+  }
