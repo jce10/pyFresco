@@ -1,6 +1,6 @@
 {
   "reaction": "12C(d,p)13C",
-  "approx": "dwba",
+  "approx": "adwa",
   "beam_energy": 16.0,
   "Z": 6,
   "AT": 12,
@@ -14,7 +14,7 @@
   "gs_spin": 0.0,
   "gs_parity": "+1",
   "angle_min": 0.0,
-  "angle_max": 55.0,
+  "angle_max": 60.0,
   "angle_step": 0.1,
   "executable_path": "fresco",
   "output_root_dir": "/home/jce18b/Esparza_SPS/2025_06_13C_campaign/dp/12Cdp_fresco"
