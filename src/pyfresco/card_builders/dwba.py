@@ -16,6 +16,7 @@ def build_dwba_input(shared, state, deuteron_pot, proton_pot, config) -> str:
     th_step = shared["th_step"]
     at = shared["at"]
     residual_mass = shared["residual_mass"]
+    beam_energy = shared["beam_energy"]
 
     q = state["q"]
     e = state["e"]
@@ -64,7 +65,7 @@ def build_dwba_input(shared, state, deuteron_pot, proton_pot, config) -> str:
        2   1   1   3  1.0000
 0
    0   1   1
-16.0
+{beam_energy}
 EOF
 """
     return fri
