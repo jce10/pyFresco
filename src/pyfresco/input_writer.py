@@ -53,6 +53,7 @@ def create_input_files(
 
     at = float(config['AT'])
     residual_mass = float(config['residual_mass'])
+    beam_energy = float(config['beam_energy'])
 
     match = re.match(r"(\d+)([A-Za-z]+)", config["label_out"])
     mass, element = match.groups()
@@ -73,6 +74,7 @@ def create_input_files(
     "th_step": th_step,
     "at": at,
     "residual_mass": residual_mass,
+    "beam_energy": beam_energy,
     "label_out_reversed": label_out_reversed,
     }
 
