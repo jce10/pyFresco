@@ -1,15 +1,16 @@
 import subprocess
+import shutil
 from pathlib import Path
 
 from pyfresco.output_parser import write_sorted_from_fresco_output
 
 """
 This module runs the FRESCO executable with the given input file and handles the output.
-It renames the output file to avoid overwriting in the next iteration, if there are multiple states in the input file.
+It copies the fort.16 file so the original stays in place, then uses the copy for further processing.
 
 Make sure to adjust the path to the FRESCO executable in the reaction_config file.
 
-The fort.16 file is where the inelastic channel cross-section is stored. 
+The fort.16 file is where the inelastic channel cross-section is stored.
 
 A fresco .fri (input) and .fro (output) file, and {nucleus}_{energy}_{n}{l}{jpi}.txt (cross-section output) file is created for each state.
 The inelastic channel is the second partition, the elastic is always calculated and is the first set of cross-section data.
@@ -28,7 +29,7 @@ def run_fresco(infile, outfile, run_dir, string_suffix, transfer_info, even_mass
             command_string,
             shell=True,
             check=True,
-            cwd=run_dir   
+            cwd=run_dir
         )
     except subprocess.CalledProcessError as error:
         print(f"Error running the command: {error}")
@@ -38,8 +39,8 @@ def run_fresco(infile, outfile, run_dir, string_suffix, transfer_info, even_mass
     renamed_outfile = run_dir / f"{config['label_out']}_{approx}_{string_suffix}.txt"
 
     try:
-        x_sec_outfile.rename(renamed_outfile)
-        print(f"File '{x_sec_outfile}' has been renamed to '{renamed_outfile}'.")
+        shutil.copy2(x_sec_outfile, renamed_outfile)
+        print(f"File '{x_sec_outfile}' has been copied to '{renamed_outfile}'.")
 
         sorted_basename = f"{config['label_out']}_{approx}_{string_suffix}"
         try:
