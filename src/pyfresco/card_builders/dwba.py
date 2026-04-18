@@ -32,7 +32,7 @@ def build_dwba_input(shared, state, entrance_pot, exit_pot, config) -> str:
     final_parity = state["final_parity"]
 
 
-    fri = f"""{config['reaction']}, {js_finalstate}{final_parity} {e} MeV {n}{l_letter}{js_transfer}
+    fri = f"""{reaction['name']}, {js_finalstate}{final_parity} {e} MeV {n}{l_letter}{js_transfer}
 0.10    55.0    0.20    0.20    30.0    -6.0
  00. 20.  +.00   F F
 0  {th_min}     {th_max}  {th_step}  1

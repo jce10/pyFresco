@@ -165,8 +165,8 @@ def create_input_files(
                 exit_pot=exit_pot,
                 config=config,
             )
-            console.print(f"[blue]\t{i}.Built ADWA input card for energy {energy_keV} keV, n={ns[i]}, "
-                          f"l={ls[i]}, js_transfer={js_transfer[i]}, js_final={js_finalstate[i]}.[/]")
+            # console.print(f"[blue]\t{i}.Built ADWA input card for energy {energy_keV} keV, n={ns[i]}, "
+            #               f"l={ls[i]}, js_transfer={js_transfer[i]}, js_final={js_finalstate[i]}.[/]")
         elif approx == "dwba":
             fri = build_dwba_input(
                 shared=shared,
@@ -175,10 +175,14 @@ def create_input_files(
                 exit_pot=exit_pot,
                 config=config,
             )
-            console.print(f"[blue]\t{i}.Built DWBA input card for energy {energy_keV} keV, n={ns[i]}, "
-                          f"l={ls[i]}, js_transfer={js_transfer[i]}, js_final={js_finalstate[i]}.[/]")
+            # console.print(f"[blue]\t{i}.Built DWBA input card for energy {energy_keV} keV, n={ns[i]}, "
+            #               f"l={ls[i]}, js_transfer={js_transfer[i]}, js_final={js_finalstate[i]}.[/]")
         else:
             raise ValueError(f"[red]Unknown approximation method: {approx!r}\n[/]")
+        
+        # card created
+        console.print(f"[blue]\t{i}.Built {approx} input card for energy {energy_keV} keV, n={ns[i]}, "
+                      f"l={ls[i]}, js_transfer={js_transfer[i]}, js_final={js_finalstate[i]}.[/]")
 
         infile = run_dir / f"{label_out_reversed}dp_{approx}_{string_suffix}.fri"
         outfile = run_dir / f"{label_out_reversed}dp_{approx}_{string_suffix}.fro"

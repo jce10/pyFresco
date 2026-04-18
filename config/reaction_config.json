@@ -12,7 +12,7 @@
     "label_out": "29Si",
     "Q_value": 6.2490,
     "binding_energy": 8.4740,
-    "gs_spin": 0.5,
+    "gs_spin": 0.0,
     "gs_parity": "+1",
     "angle_min": 0.0,
     "angle_max": 180.0,
