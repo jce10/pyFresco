@@ -3,7 +3,10 @@
 
 """
 
-def build_dwba_input(shared, state, deuteron_pot, proton_pot, config) -> str:
+def build_dwba_input(shared, state, entrance_pot, exit_pot, config) -> str:
+
+    reaction = config["reaction"]
+    runtime = config["runtime"]
 
     # get all the variables from the config file and the state dictionary to fill in the FRESCO input card template
     Z_fmt = shared["Z_fmt"]
@@ -35,19 +38,19 @@ def build_dwba_input(shared, state, deuteron_pot, proton_pot, config) -> str:
 0  {th_min}     {th_max}  {th_step}  1
 0.0    0 1   1 1  48          .000    0.   0.001
  1 1 0 0 2 3 0 0-3 1 0 0 1
-2H      2.0141  1.0        1  {config['label_in']:<8}{mass_in} {Z_fmt}    0.0000
+2H      2.0141  1.0        1  {reaction['label_in']:<8}{mass_in} {Z_fmt}    0.0000
 1.0   +1 0.0               1 {gs_spin_fmt}   {gs_parity_fmt} 0.000
-1H      1.0078  1.0        1  {config['label_out']:<8}{mass_out} {Z_fmt}    {q}
+1H      1.0078  1.0        1  {reaction['label_out']:<8}{mass_out} {Z_fmt}    {q}
 0.5   +1 0.0               2  {js_finalstate}   {final_parity} {e}
 
-  1 0  0    {at}     0.0   {deuteron_pot['rc0']:5.3f}
-  1 1  0   {deuteron_pot['V']:5.2f}   {deuteron_pot['r0']:5.3f}   {deuteron_pot['a']:5.3f}   {deuteron_pot['Vi']:5.3f}   {deuteron_pot['ri0']:5.3f}   {deuteron_pot['ai']:5.3f}
-  1 2  0                           {deuteron_pot['Vsi']:5.2f}   {deuteron_pot['rsi0']:5.3f}   {deuteron_pot['asi']:5.3f}
-  1 3  0   {deuteron_pot['Vso']:5.2f}   {deuteron_pot['rso0']:5.3f}   {deuteron_pot['aso']:5.3f}   {deuteron_pot['Vsoi']:5.2f}   {deuteron_pot['rsoi0']:5.3f}   {deuteron_pot['asoi']:5.3f}
-  2 0  0    {residual_mass}     0.0   {proton_pot['rc0']:5.3f}
-  2 1  0   {proton_pot['V']:5.2f}   {proton_pot['r0']:5.3f}   {proton_pot['a']:5.3f}   {proton_pot['Vi']:5.3f}   {proton_pot['ri0']:5.3f}   {proton_pot['ai']:5.3f}
-  2 2  0                           {proton_pot['Vsi']:5.2f}   {proton_pot['rsi0']:5.3f}   {proton_pot['asi']:5.3f}
-  2 3  0   {proton_pot['Vso']:5.2f}   {proton_pot['rso0']:5.3f}   {proton_pot['aso']:5.3f}   {proton_pot['Vsoi']:5.2f}   {proton_pot['rsoi0']:5.3f}   {proton_pot['asoi']:5.3f}
+  1 0  0    {at}     0.0   {entrance_pot['rc0']:5.3f}
+  1 1  0   {entrance_pot['V']:5.2f}   {entrance_pot['r0']:5.3f}   {entrance_pot['a']:5.3f}   {entrance_pot['Vi']:5.3f}   {entrance_pot['ri0']:5.3f}   {entrance_pot['ai']:5.3f}
+  1 2  0                           {entrance_pot['Vsi']:5.2f}   {entrance_pot['rsi0']:5.3f}   {entrance_pot['asi']:5.3f}
+  1 3  0   {entrance_pot['Vso']:5.2f}   {entrance_pot['rso0']:5.3f}   {entrance_pot['aso']:5.3f}   {entrance_pot['Vsoi']:5.2f}   {entrance_pot['rsoi0']:5.3f}   {entrance_pot['asoi']:5.3f}
+  2 0  0    {residual_mass}     0.0   {exit_pot['rc0']:5.3f}
+  2 1  0   {exit_pot['V']:5.2f}   {exit_pot['r0']:5.3f}   {exit_pot['a']:5.3f}   {exit_pot['Vi']:5.3f}   {exit_pot['ri0']:5.3f}   {exit_pot['ai']:5.3f}
+  2 2  0                           {exit_pot['Vsi']:5.2f}   {exit_pot['rsi0']:5.3f}   {exit_pot['asi']:5.3f}
+  2 3  0   {exit_pot['Vso']:5.2f}   {exit_pot['rso0']:5.3f}   {exit_pot['aso']:5.3f}   {exit_pot['Vsoi']:5.2f}   {exit_pot['rsoi0']:5.3f}   {exit_pot['asoi']:5.3f}
   3 0  0    1.00            1.25
   3 1  5    1.00            1.00
   3 3  5    1.00            1.00

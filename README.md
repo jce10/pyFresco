@@ -83,3 +83,16 @@ An example case for the reaction 49Ti(d,p)50Ti populating a 3⁺ state at 4.172 
 
 
 install optional dependencies: pip install -e .[gui]/[.dev]
+
+
+RunPyfresco.py (runs pyfreso.py main function)
+
+1. load config
+2. defines reaction
+3. specifies which card from card builder (DWBA, ADWA, etc.)
+4. generates fresco input card based on rxn and transfer specified in input_generator.inp
+5. runs fresco
+6. generates sorted files of transfer cross sections from fresco output
+
+IN DEVELOPMENT
+7. runs chi^2 minimizer to find optimal spec. amplitude

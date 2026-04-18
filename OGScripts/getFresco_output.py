@@ -35,10 +35,12 @@ def getoutput(file, fname, path):
         
     
     storefile = os.path.join(path, f'{fname}.sorted')
+
     with open(storefile, 'w') as f:
         writer = csv.writer(f, delimiter='\t')
         writer.writerows(zip(angles, cross_sections))
-    print(f'Successfully written file {fname}.sorted!')
+    
+    print(f'\nSuccessfully written file {fname}.sorted!')
 
 def parseArgs():
     parser = argparse.ArgumentParser()
@@ -48,7 +50,7 @@ def parseArgs():
 
 def main():
     '''
-    Script that takes a FRESCO output file and scraps the the full DWBA angular distribution, currently skips elastic data.
+    Script that takes a FRESCO output file and scrapes the the full DWBA angular distribution, currently skips elastic data.
     '''
     dir = os.getcwd()
     args = parseArgs()

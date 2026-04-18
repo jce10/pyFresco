@@ -1,14 +1,16 @@
 import sys
 from pathlib import Path
 
+# from pyfresco import omps
 from pyfresco import omps as adwa_pot
-
+from pyfresco import omps as dwba_pot
 from pyfresco.config import REACTION_CONFIG_FILE
 from pyfresco.config_loader import load_reaction_config
 from pyfresco.input_parser import get_input
 from pyfresco.input_writer import create_input_files
 
-def print_optical_potentials(deuteron_pot, proton_pot, config):
+
+def print_optical_potentials(entrance_pot, exit_pot, config):
     def _print_block(label, particle, pot):
         print("=" * 60)
         print(f"{label} + {particle} Optical Model Parameters")
@@ -38,25 +40,42 @@ def print_optical_potentials(deuteron_pot, proton_pot, config):
         print(fmt.format("rc0", pot["rc0"]))
         print()
 
-    _print_block(config["label_in"], "d", deuteron_pot)
-    _print_block(config["label_out"], "p", proton_pot)
+    _print_block(config["label_in"], "d", entrance_pot)
+    _print_block(config["label_out"], "p", exit_pot)
 
 
 def main(run_dir=None):
     config = load_reaction_config(REACTION_CONFIG_FILE)
-    output_root_dir = Path(config["output_root_dir"]).expanduser()
+    runtime = config["runtime"]
+    reaction = config["reaction"]
+    output_root_dir = Path(runtime["output_root_dir"]).expanduser()
     output_root_dir.mkdir(parents=True, exist_ok=True)
 
-    beam_energy = config["beam_energy"]
-    zt = config["Z"]
-    at = config["AT"]
-    residual_mass = config["residual_mass"]
+    approx = reaction["approx"].strip().lower()
+    beam_energy = reaction["beam_energy"]
+    zt = reaction["Z"]
+    at = reaction["AT"]
+    residual_mass = reaction["residual_mass"]
 
-    deuteron_pot = adwa_pot.Wales_Johnson_deuteron_AWDA(beam_energy, zt, at)
-    proton_pot = adwa_pot.koning_delaroche_proton_potential(beam_energy, zt, residual_mass)
+    if approx == "adwa":
+        entrance_pot = omps.Wales_Johnson_deuteron_ADWA(beam_energy, zt, at)
+        exit_pot =     omps.koning_delaroche_proton_potential(beam_energy, zt, residual_mass)
+
+    elif approx == "dwba":
+        entrance_pot = config["potentials"]["dwba"]["entrance"]
+        exit_pot = config["potentials"]["dwba"]["exit"]
+
+    elif approx == "ccba":
+        raise NotImplementedError("CCBA support not implemented yet.")
+
+    elif approx == "crc":
+        raise NotImplementedError("CRC support not implemented yet.")
+
+    else:
+        raise ValueError(f"Unknown approximation: {approx!r}")
 
     if len(sys.argv) > 1 and sys.argv[1] == "print_params":
-        print_optical_potentials(deuteron_pot, proton_pot, config)
+        print_optical_potentials(entrance_pot, exit_pot, config)
         return
 
     energies, ns, ls, js_transfer, js_finalstate = get_input()
@@ -70,9 +89,9 @@ def main(run_dir=None):
         ls,
         js_transfer,
         js_finalstate,
-        deuteron_pot,
-        proton_pot,
-        config
+        entrance_pot,
+        exit_pot,
+        config,
     )
 
 

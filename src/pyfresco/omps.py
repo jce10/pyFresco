@@ -139,7 +139,7 @@ def koning_delaroche_proton_potential(E: float, zt: int, at: int):
     # rounded_params = round_params(params)
     # return rounded_params
 
-def Wales_Johnson_deuteron_AWDA(E: float, zt: int, at: int):
+def Wales_Johnson_deuteron_ADWA(E: float, zt: int, at: int):
 
     """
 
@@ -234,7 +234,7 @@ def main():
         
         a1 = koning_delaroche_proton_potential(E, zt, at)
         a2 = koning_delaroche_neutron_potential(E, zt, at)
-        a3 = Wales_Johnson_deuteron_AWDA(E, zt, at)
+        a3 = Wales_Johnson_deuteron_ADWA(E, zt, at)
         
         print(a1)
         print(a2)

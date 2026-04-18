@@ -1,21 +1,71 @@
 {
-  "reaction": "12C(d,p)13C",
-  "approx": "adwa",
-  "beam_energy": 16.0,
-  "Z": 6,
-  "AT": 12,
-  "residual_mass": 13,
-  "mass_in": 12.0000,
-  "mass_out": 13.0034,
-  "label_in": "12C",
-  "label_out": "13C",
-  "Q_value": 2.7217,
-  "binding_energy": 4.9463,
-  "gs_spin": 0.0,
-  "gs_parity": "+1",
-  "angle_min": 0.0,
-  "angle_max": 60.0,
-  "angle_step": 0.1,
-  "executable_path": "fresco",
-  "output_root_dir": "/home/jce18b/Esparza_SPS/2025_06_13C_campaign/dp/12Cdp_fresco"
+  "reaction": {
+    "name": "28Si(d,p)29Si",
+    "approx": "dwba",
+    "beam_energy": 16.0,
+    "Z": 15,
+    "AT": 28,
+    "residual_mass": 15,
+    "mass_in": 27.9769,
+    "mass_out": 28.9765,
+    "label_in": "28Si",
+    "label_out": "29Si",
+    "Q_value": 6.2490,
+    "binding_energy": 8.4740,
+    "gs_spin": 0.5,
+    "gs_parity": "+1",
+    "angle_min": 0.0,
+    "angle_max": 180.0,
+    "angle_step": 0.1
+  },
+  "runtime": {
+    "executable_path": "fresco",
+    "output_root_dir": "/home/jce18b/Programs/JCEfresco/Exercises/fresconamelist/28Sidp"
+  },
+  "potentials": {
+    "adwa": {
+      "source": "global"
+    },
+    "dwba": {
+      "source": "manual",
+      "entrance": {
+        "V":    -86.35,
+        "r0":    1.15,
+        "a":     0.81,
+        "Vi":    0.00,
+        "ri0":   0.00,
+        "ai":    0.00,
+        "Vsi":   18.62,
+        "rsi0":  1.34,
+        "asi":   0.68,
+        "Vso":   0.00,
+        "rso0":  0.00,
+        "aso":   0.00,
+        "Vsoi":  0.00,
+        "rsoi0": 0.00,
+        "asoi":  0.00,
+        "rc0":   1.15
+      },
+      "exit": {
+        "V":    -55.80,
+        "r0":    1.17,
+        "a":     0.75,
+        "Vi":    2.70,
+        "ri0":   1.32,
+        "ai":    0.51,
+        "Vsi":   11.80,
+        "rsi0":  1.32,
+        "asi":   0.51,
+        "Vso":  -24.8,
+        "rso0":  1.01,
+        "aso":   0.75,
+        "Vsoi":  0.00,
+        "rsoi0": 0.00,
+        "asoi":  0.00,
+        "rc0":   1.25
+      }
+    },
+    "ccba": {},
+    "crc": {}
   }
+}

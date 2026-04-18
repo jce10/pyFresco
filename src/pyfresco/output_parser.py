@@ -1,6 +1,3 @@
-import csv
-from pathlib import Path
-
 """
 Module to extract angular distribution block from a FRESCO text output (e.g. fort.16 renamed)
 and write a two-column .sorted file (angle, xsec) to out_dir.
@@ -8,6 +5,12 @@ and write a two-column .sorted file (angle, xsec) to out_dir.
 Returns the path to the written .sorted file.
 
 """
+
+import csv
+from pathlib import Path
+from rich.console import Console
+
+console = Console()
 
 def write_sorted_from_fresco_output(infile: str, out_dir: str, out_basename: str) -> str:
     angles = []
@@ -59,5 +62,5 @@ def write_sorted_from_fresco_output(infile: str, out_dir: str, out_basename: str
         writer = csv.writer(f, delimiter="\t")
         writer.writerows(zip(angles, cross_sections))
 
-    print(f"Successfully written file {storefile}")
+    # console.print(f"[green]Successfully written file {storefile.name}!\n[/]")
     return str(storefile)
